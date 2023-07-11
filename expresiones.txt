@@ -1,0 +1,9 @@
+pagina = https://www.ambito.com/contenidos/dolar.html
+
+
+nombres_compra_venta = //span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Compra")]/ancestor::node()/div/h2[@class="variation-max-min__title"]/a/span/text()
+precios_compra = //span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Compra")]/../span[1]/text()
+precios_venta = //span[@class="variation-max-min__value data-valor data-venta"]/text()
+
+nombres_referencia = //span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Referencia")]/ancestor::node()/div/h2[@class="variation-max-min__title"]/a/span/text()
+precios_referencia = //span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Referencia")]/../span[1]/text()
