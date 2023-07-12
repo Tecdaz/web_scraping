@@ -1,14 +1,10 @@
 import requests
 import lxml.html as html
 
-HOME = 'https://www.ambito.com/contenidos/dolar.html'
+HOME = 'https://dolarhoy.com/cotizaciondolarblue'
 
-XPATH_NAMES_EXCHANGE = '//span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Compra")]/ancestor::node()/div/h2[@class="variation-max-min__title"]/a/span/text()'
-XPATH_PRICES_BUY = '//span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Compra")]/../span[1]/text()'
-XPATH_PRICES_SELL = '//span[@class="variation-max-min__value data-valor data-venta"]/text()'
+XPATH_LINKS = '//div[@class="tile cotizaciones_more"]//a/@href'
 
-XPATH_NAMES_REFERENCE = '//span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Referencia")]/ancestor::node()/div/h2[@class="variation-max-min__title"]/a/span/text()'
-XPATH_PRICES_REFERENCE = '//span[@class="variation-max-min__description data-valor-descripcion" and contains(., "Referencia")]/../span[1]/text()'
 
 def parse_exchange():
     try:
@@ -16,20 +12,33 @@ def parse_exchange():
         if response.status_code == 200:
             home = response.content.decode('utf-8')
             parsed = html.fromstring(home)
-            exchange_names = parsed.xpath(XPATH_NAMES_EXCHANGE)
-            print(exchange_names)
+            links = parsed.xpath(XPATH_LINKS)
+            monedas = []
+
+            for link in links:
+                moneda = {}
+                moneda['name'] = parsed.xpath(
+                    f'//div[@class="tile cotizaciones_more"]//a[@href="{link}"]/div[1]/text()')[0]
+                moneda['compra'] = parsed.xpath(
+                    f'//div[@class="tile cotizaciones_more"]//a[@href="{link}"]/div[2]/text()')[0]
+                moneda['venta'] = parsed.xpath(
+                    f'//div[@class="tile cotizaciones_more"]//a[@href="{link}"]/div[3]/text()')[0]
+                monedas.append(moneda)
+
+            for moneda in monedas:
+                print(f'{moneda["name"]}.')
+                print(f'Compra: {moneda["compra"]}.')
+                print(f'Venta: {moneda["venta"]}.\n')
         else:
             raise ValueError(f'Error: {response.status_code}')
-        
+
     except ValueError as status:
         print(status)
-
-def parse_reference():
-    pass
 
 
 def run():
     parse_exchange()
+
 
 if __name__ == "__main__":
     run()
